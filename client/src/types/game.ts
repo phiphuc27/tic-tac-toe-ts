@@ -1,4 +1,11 @@
-import { CLICK_SQUARE, NEW_GAME, SET_WINNER } from '../constants/game';
+import {
+  CLICK_SQUARE,
+  MOVE_JUMP,
+  NEW_GAME,
+  QUIT_GAME,
+  SET_WINNER,
+  SUBTRACT_SCORE,
+} from '../constants/game';
 
 export interface Square {
   row: number;
@@ -16,10 +23,19 @@ export interface Winner {
   moves: Move[] | null;
 }
 
+export interface Score {
+  [index: string]: number;
+  X: number;
+  O: number;
+}
+
 export interface GameState {
   board: string[][];
   isTurn: boolean;
   winner: Winner | null;
+  history: Square[];
+  step: number;
+  score: Score;
 }
 
 export interface ClickSquareAction {
@@ -36,4 +52,26 @@ export interface NewGameAction {
   type: typeof NEW_GAME;
 }
 
-export type GameActionTypes = ClickSquareAction | SetWinnerAction | NewGameAction;
+export interface QuitGameAction {
+  type: typeof QUIT_GAME;
+}
+
+export interface MoveJumpAction {
+  type: typeof MOVE_JUMP;
+  board: string[][];
+  step: number;
+}
+
+export interface SubTractScoreAction {
+  type: typeof SUBTRACT_SCORE;
+  name: string;
+  point: number;
+}
+
+export type GameActionTypes =
+  | ClickSquareAction
+  | SetWinnerAction
+  | NewGameAction
+  | MoveJumpAction
+  | QuitGameAction
+  | SubTractScoreAction;

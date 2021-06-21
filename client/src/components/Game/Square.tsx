@@ -1,56 +1,72 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { ClearRounded, FiberManualRecordOutlined } from '@material-ui/icons';
-import { AppState } from '../../store';
+import { Winner } from '../../types/game';
 
 interface SquareProps {
   value: string | null;
+  winner: Winner | null;
+  current: boolean;
   handleClick: () => void;
 }
 
-interface BgProps {
+interface StyleProps {
+  color: string;
   bgColor: string;
+  current: boolean;
 }
 
-const useStyles = makeStyles(({ palette }) => ({
-  square: ({ bgColor }: BgProps) => ({
+const useStyles = makeStyles(() => ({
+  square: ({ bgColor, current }: StyleProps) => ({
     background: bgColor,
-    border: '1px solid #999',
-    width: '36px',
-    height: '36px',
+    border: `1px solid #999`,
+    width: '35px',
+    height: '35px',
     marginRight: '-1px',
     marginTop: '-1px',
     padding: 0,
     cursor: 'pointer',
+    filter: current ? 'brightness(90%)' : '',
     transition: 'background 300ms ease-in',
   }),
-  square_x: {
-    color: palette.info.main,
-  },
-  square_o: {
-    color: palette.error.main,
-  },
+  square__text: ({ color }: StyleProps) => ({
+    color,
+  }),
 }));
 
-const Square: React.FC<SquareProps> = ({ value, handleClick }) => {
+const Square: React.FC<SquareProps> = ({ winner, value, handleClick, current }) => {
   const { palette } = useTheme();
-  const { winner } = useSelector((state: AppState) => state.game);
 
-  let bgColor = '#fff';
+  const squareColor = { X_COLOR: palette.primary.main, O_COLOR: palette.error.main };
 
-  if (winner?.name === value) {
-    if (winner.name === 'X') bgColor = palette.info.main;
-    if (winner.name === 'O') bgColor = palette.error.main;
+  const myStyle: StyleProps = {
+    color: '',
+    bgColor: '#fff',
+    current,
+  };
+
+  if (value === 'X') {
+    myStyle.color = squareColor.X_COLOR;
+  } else if (value === 'O') {
+    myStyle.color = squareColor.O_COLOR;
   }
 
-  const styles = useStyles({ bgColor });
+  if (winner?.name === value) {
+    myStyle.color = '#fff';
+    if (winner.name === 'X') myStyle.bgColor = squareColor.X_COLOR;
+    if (winner.name === 'O') myStyle.bgColor = squareColor.O_COLOR;
+  }
+
+  const styles = useStyles(myStyle);
+
   return (
     <div onClick={handleClick} className={styles.square}>
       {value === 'X' ? (
-        <ClearRounded fontSize='large' className={styles.square_x} />
+        <ClearRounded fontSize='large' className={styles.square__text} />
       ) : (
-        value === 'O' && <FiberManualRecordOutlined fontSize='large' className={styles.square_o} />
+        value === 'O' && (
+          <FiberManualRecordOutlined fontSize='large' className={styles.square__text} />
+        )
       )}
     </div>
   );

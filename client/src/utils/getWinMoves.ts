@@ -19,7 +19,6 @@ const checkRow = (square: Square, board: string[][]) => {
     prev--;
   }
 
-  console.log(winMoves);
   if (winMoves.length === 5) {
     const sort = winMoves.sort((a, b) => a.col - b.col);
     if (board[row][sort[0].col - 1] === null || board[row][sort[4].col + 1] === null) {
