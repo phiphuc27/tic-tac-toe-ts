@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { BOARD_SIZE } from '../../constants/global';
 import { Square as SquareType } from '../../types/game';
 import { AppState } from '../../store';
-import { clickSquare, newGame } from '../../actions/game';
+import { clickSquare, quitGame } from '../../actions/game';
 import Square from './Square';
 import { Box } from '@material-ui/core';
 
@@ -26,7 +26,7 @@ const Board: React.FC = () => {
 
   useEffect(() => {
     return () => {
-      dispatch(newGame());
+      dispatch(quitGame());
     };
   }, [dispatch]);
 

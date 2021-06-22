@@ -30,10 +30,6 @@ const History: React.FC = () => {
     }
   }, [step, isAscending]);
 
-  useEffect(() => {
-    dispatch(moveJump(selectedIdx));
-  }, [selectedIdx, dispatch]);
-
   let historyDisplay = [...history];
   historyDisplay = [{ row: -1, col: -1, value: 'Go to game start' }, ...historyDisplay];
 
@@ -48,8 +44,7 @@ const History: React.FC = () => {
         ref={(el: HTMLDivElement) => (historyRefs.current[idx] = el)}
         dense
         button
-        onClick={() => setSelectedIdx(idx)}
-      >
+        onClick={() => dispatch(moveJump(idx))}>
         <ListItemIcon>
           <Radio
             color='primary'
@@ -73,14 +68,13 @@ const History: React.FC = () => {
             variant='outlined'
             name='Sort'
             defaultValue={Number(isAscending)}
-            onChange={() => toggleSort(!isAscending)}
-          >
+            onChange={() => toggleSort(!isAscending)}>
             <MenuItem value={1}>Ascending</MenuItem>
             <MenuItem value={0}>Descending</MenuItem>
           </Select>
         </Grid>
       </Grid>
-      <List style={{ maxHeight: '360px', overflow: 'auto', marginTop: '1rem' }}>
+      <List style={{ maxHeight: '300px', overflow: 'auto', marginTop: '1rem' }}>
         {isAscending
           ? historyList.sort((a: any, b: any) => a.key - b.key)
           : historyList.sort((a: any, b: any) => b.key - a.key)}

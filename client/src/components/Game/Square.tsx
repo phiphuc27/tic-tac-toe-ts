@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { createStyles, makeStyles, useTheme } from '@material-ui/core/styles';
 import { ClearRounded, FiberManualRecordOutlined } from '@material-ui/icons';
 import { Winner } from '../../types/game';
 
@@ -16,29 +16,31 @@ interface StyleProps {
   current: boolean;
 }
 
-const useStyles = makeStyles(() => ({
-  square: ({ bgColor, current }: StyleProps) => ({
-    background: bgColor,
-    border: `1px solid #999`,
-    width: '35px',
-    height: '35px',
-    marginRight: '-1px',
-    marginTop: '-1px',
-    padding: 0,
-    cursor: 'pointer',
-    filter: current ? 'brightness(90%)' : '',
-    transition: 'background 300ms ease-in',
-  }),
-  square__text: ({ color }: StyleProps) => ({
-    color,
-  }),
-}));
+const useStyles = makeStyles(() =>
+  createStyles({
+    square: ({ bgColor, current }: StyleProps) => ({
+      background: bgColor,
+      border: `1px solid #999`,
+      width: '33px',
+      height: '33px',
+      marginRight: '-1px',
+      marginTop: '-1px',
+      padding: 0,
+      cursor: 'pointer',
+      filter: current ? 'brightness(90%)' : '',
+      transition: 'background 300ms ease-in',
+    }),
+    square__text: ({ color }: StyleProps) => ({
+      color,
+      width: '33px',
+      height: '33px',
+    }),
+  })
+);
 
 const Square: React.FC<SquareProps> = ({ winner, value, handleClick, current }) => {
   const { palette } = useTheme();
-
-  const squareColor = { X_COLOR: palette.primary.main, O_COLOR: palette.error.main };
-
+  const squareColor = { X_COLOR: palette.primary.main, O_COLOR: palette.secondary.main };
   const myStyle: StyleProps = {
     color: '',
     bgColor: '#fff',

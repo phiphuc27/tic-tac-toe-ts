@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import { AppState } from '../../store';
+import { newGame, moveJump } from '../../actions/game';
 import { Paper, Divider, Box, Typography } from '@material-ui/core';
 import { Autorenew, ExitToApp, Undo, Redo } from '@material-ui/icons';
 import ButtonBox from '../shared/form/ButtonBox';
 import ButtonContained from '../shared/form/ButtonContained';
-import { newGame, moveJump, quitGame } from '../../actions/game';
 import History from './History';
 
 interface GameSideBarProps {}
@@ -14,6 +15,7 @@ const GameSideBar: React.FC<GameSideBarProps> = () => {
   const dispatch = useDispatch();
   const { winner, isTurn, step, history, score } = useSelector((state: AppState) => state.game);
   const [status, setStatus] = useState('');
+  const redirectHistory = useHistory();
 
   useEffect(() => {
     if (!winner) {
@@ -36,7 +38,7 @@ const GameSideBar: React.FC<GameSideBarProps> = () => {
             <ButtonContained startIcon={<Autorenew />} onClick={() => dispatch(newGame())}>
               New Game
             </ButtonContained>
-            <ButtonContained startIcon={<ExitToApp />} onClick={() => dispatch(quitGame())}>
+            <ButtonContained startIcon={<ExitToApp />} onClick={() => redirectHistory.push('/')}>
               Quit Game
             </ButtonContained>
           </ButtonBox>
@@ -44,15 +46,13 @@ const GameSideBar: React.FC<GameSideBarProps> = () => {
             <ButtonContained
               startIcon={<Undo />}
               onClick={() => dispatch(moveJump(step - 1))}
-              disabled={step < 1}
-            >
+              disabled={step < 1}>
               Undo
             </ButtonContained>
             <ButtonContained
               startIcon={<Redo />}
               onClick={() => dispatch(moveJump(step + 1))}
-              disabled={step >= history.length}
-            >
+              disabled={step >= history.length}>
               Redo
             </ButtonContained>
           </ButtonBox>
