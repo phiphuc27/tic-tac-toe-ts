@@ -3,6 +3,7 @@ import {
   MOVE_JUMP,
   NEW_GAME,
   QUIT_GAME,
+  SET_OPPONENT,
   SET_WINNER,
   SUBTRACT_SCORE,
 } from '../constants/game';
@@ -36,6 +37,7 @@ export interface GameState {
   history: Square[];
   step: number;
   score: Score;
+  opponent: string;
 }
 
 export interface ClickSquareAction {
@@ -68,10 +70,16 @@ export interface SubTractScoreAction {
   point: number;
 }
 
+export interface SetOpponentAction {
+  type: typeof SET_OPPONENT;
+  opponent: string;
+}
+
 export type GameActionTypes =
   | ClickSquareAction
   | SetWinnerAction
   | NewGameAction
   | MoveJumpAction
   | QuitGameAction
-  | SubTractScoreAction;
+  | SubTractScoreAction
+  | SetOpponentAction;

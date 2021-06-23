@@ -19,12 +19,18 @@ const useStyles = makeStyles(({ palette }: Theme) =>
         transformOrigin: 'right',
         transition: 'transform 250ms ease-out',
       },
-      '&:hover': {
+      '&:hover,&:focus': {
+        outline: 'none',
         textDecoration: 'none',
       },
       '&:hover::after, &:focus::after': {
         transform: 'scaleX(100%)',
         transformOrigin: 'left',
+      },
+    },
+    active: {
+      '&::after': {
+        transform: 'scaleX(100%)',
       },
     },
   })
@@ -38,7 +44,13 @@ const NavLink: React.FC<MyNavLinkProps> = ({ children, ...props }) => {
   const styles = useStyles();
   return (
     <li>
-      <Link {...props} component={RouterLink} className={styles.menu__item} color='inherit' exact>
+      <Link
+        {...props}
+        component={RouterLink}
+        className={styles.menu__item}
+        activeClassName={styles.active}
+        color='inherit'
+        exact>
         {children}
       </Link>
     </li>

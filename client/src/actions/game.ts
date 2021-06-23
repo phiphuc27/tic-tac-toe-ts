@@ -6,11 +6,13 @@ import {
   MOVE_JUMP,
   QUIT_GAME,
   SUBTRACT_SCORE,
+  SET_OPPONENT,
 } from '../constants/game';
-import { BOARD_SIZE } from '../constants/global';
+import { BOARD_SIZE, OPPONENT } from '../constants/global';
 import { AppState } from '../store';
 import { AppActions } from '../types';
 import { Square, Winner } from '../types/game';
+import getBestMove from '../utils/getBestMove';
 import getWinMoves from '../utils/getWinMoves';
 
 // ====================== Dispatch Actions ======================
@@ -44,19 +46,28 @@ const subtractScoreDispatch = (name: string, point: number): AppActions => ({
   point,
 });
 
+const setOpponentDispatch = (opponent: string): AppActions => ({
+  type: SET_OPPONENT,
+  opponent,
+});
+
 // ====================== Export Actions ======================
-export const newGame = () => (dispatch: Dispatch) => {
+export const newGame = () => (dispatch: Dispatch<AppActions>) => {
   dispatch(newGameDispatch());
 };
 
-export const quitGame = () => (dispatch: Dispatch) => {
+export const quitGame = () => (dispatch: Dispatch<AppActions>) => {
   dispatch(quitGameDispatch());
+};
+
+export const setOpponent = (opponent: string) => (dispatch: Dispatch<AppActions>) => {
+  dispatch(setOpponentDispatch(opponent));
 };
 
 export const clickSquare =
   (square: Square) => (dispatch: Dispatch<AppActions>, getState: () => AppState) => {
     const {
-      game: { board },
+      game: { board, opponent },
     } = getState();
 
     dispatch(clickSquareDispatch(square));
@@ -65,6 +76,23 @@ export const clickSquare =
 
     if (winner) {
       dispatch(setWinnerDispatch(winner));
+    }
+
+    // When player play with computer
+    if (opponent === 'computer') {
+      const {
+        game: { board: newBoard },
+      } = getState();
+
+      const bestMove = getBestMove(newBoard, OPPONENT);
+
+      dispatch(clickSquareDispatch(bestMove));
+
+      const winner = getWinMoves(bestMove, newBoard);
+
+      if (winner) {
+        dispatch(setWinnerDispatch(winner));
+      }
     }
   };
 

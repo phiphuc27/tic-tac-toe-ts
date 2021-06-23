@@ -1,12 +1,13 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { makeStyles } from '@material-ui/core/styles';
-import { BOARD_SIZE } from '../../constants/global';
-import { Square as SquareType } from '../../types/game';
-import { AppState } from '../../store';
-import { clickSquare, quitGame } from '../../actions/game';
-import Square from './Square';
+import { AppDispatch, AppState } from '../../store';
+import { BOARD_SIZE, OPPONENT, PLAYER } from '../../constants/global';
 import { Box } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { Square as SquareType } from '../../types/game';
+import { clickSquare, quitGame, setOpponent } from '../../actions/game';
+import Square from './Square';
+import { useParams } from 'react-router-dom';
 
 const useStyles = makeStyles({
   board: {
@@ -18,17 +19,19 @@ const useStyles = makeStyles({
 
 const Board: React.FC = () => {
   const styles = useStyles();
-  const dispatch = useDispatch();
-
+  const dispatch: AppDispatch = useDispatch();
   const { board, winner, isTurn, history, step } = useSelector((state: AppState) => state.game);
+  const mode = useParams()['mode'];
 
   const curSquare = history[step - 1];
 
   useEffect(() => {
+    dispatch(setOpponent(mode));
+
     return () => {
       dispatch(quitGame());
     };
-  }, [dispatch]);
+  }, [dispatch, mode]);
 
   const handleClick = (row: number, col: number) => {
     if (winner || board[row][col]) return;
@@ -36,7 +39,7 @@ const Board: React.FC = () => {
     const clickedSquare = {
       row,
       col,
-      value: isTurn ? 'X' : 'O',
+      value: isTurn ? PLAYER : OPPONENT,
     } as SquareType;
 
     dispatch(clickSquare(clickedSquare));

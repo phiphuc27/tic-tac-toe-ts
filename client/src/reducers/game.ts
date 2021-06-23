@@ -3,6 +3,7 @@ import {
   MOVE_JUMP,
   NEW_GAME,
   QUIT_GAME,
+  SET_OPPONENT,
   SET_WINNER,
   SUBTRACT_SCORE,
 } from '../constants/game';
@@ -21,6 +22,7 @@ const initialState: GameState = {
     X: 0,
     O: 0,
   },
+  opponent: 'player',
 };
 
 const reducer = (state = initialState, action: GameActionTypes): GameState => {
@@ -68,8 +70,15 @@ const reducer = (state = initialState, action: GameActionTypes): GameState => {
         },
       };
 
+    case SET_OPPONENT: {
+      return {
+        ...state,
+        opponent: action.opponent,
+      };
+    }
+
     case NEW_GAME:
-      return { ...initialState, score: { ...state.score } };
+      return { ...initialState, score: { ...state.score }, opponent: state.opponent };
 
     case QUIT_GAME:
       return { ...initialState, score: { ...initialState.score, X: 0, O: 0 } };

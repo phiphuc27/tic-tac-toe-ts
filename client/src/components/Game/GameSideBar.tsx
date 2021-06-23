@@ -13,7 +13,9 @@ interface GameSideBarProps {}
 
 const GameSideBar: React.FC<GameSideBarProps> = () => {
   const dispatch = useDispatch();
-  const { winner, isTurn, step, history, score } = useSelector((state: AppState) => state.game);
+  const { winner, isTurn, step, history, score, opponent } = useSelector(
+    (state: AppState) => state.game
+  );
   const [status, setStatus] = useState('');
   const redirectHistory = useHistory();
 
@@ -45,13 +47,13 @@ const GameSideBar: React.FC<GameSideBarProps> = () => {
           <ButtonBox gap={1}>
             <ButtonContained
               startIcon={<Undo />}
-              onClick={() => dispatch(moveJump(step - 1))}
+              onClick={() => dispatch(moveJump(opponent === 'player' ? step - 1 : step - 2))}
               disabled={step < 1}>
               Undo
             </ButtonContained>
             <ButtonContained
               startIcon={<Redo />}
-              onClick={() => dispatch(moveJump(step + 1))}
+              onClick={() => dispatch(moveJump(opponent === 'player' ? step + 1 : step + 2))}
               disabled={step >= history.length}>
               Redo
             </ButtonContained>

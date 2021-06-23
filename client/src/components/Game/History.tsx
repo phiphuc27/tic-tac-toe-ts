@@ -18,8 +18,7 @@ import Select from '../shared/form/Select';
 const History: React.FC = () => {
   const dispatch = useDispatch();
   const [isAscending, toggleSort] = useState(true);
-  const { history, step } = useSelector((state: AppState) => state.game);
-  const [selectedIdx, setSelectedIdx] = useState(step);
+  const { history, step, opponent } = useSelector((state: AppState) => state.game);
   const historyRefs = useRef<HTMLDivElement[]>([]);
 
   useEffect(() => {
@@ -44,6 +43,7 @@ const History: React.FC = () => {
         ref={(el: HTMLDivElement) => (historyRefs.current[idx] = el)}
         dense
         button
+        disabled={opponent === 'computer' && item.value === 'X'}
         onClick={() => dispatch(moveJump(idx))}>
         <ListItemIcon>
           <Radio

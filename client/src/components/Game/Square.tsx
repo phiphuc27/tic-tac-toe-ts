@@ -2,6 +2,7 @@ import React from 'react';
 import { createStyles, makeStyles, useTheme } from '@material-ui/core/styles';
 import { ClearRounded, FiberManualRecordOutlined } from '@material-ui/icons';
 import { Winner } from '../../types/game';
+import { OPPONENT, PLAYER } from '../../constants/global';
 
 interface SquareProps {
   value: string | null;
@@ -47,16 +48,16 @@ const Square: React.FC<SquareProps> = ({ winner, value, handleClick, current }) 
     current,
   };
 
-  if (value === 'X') {
+  if (value === PLAYER) {
     myStyle.color = squareColor.X_COLOR;
-  } else if (value === 'O') {
+  } else if (value === OPPONENT) {
     myStyle.color = squareColor.O_COLOR;
   }
 
   if (winner?.name === value) {
     myStyle.color = '#fff';
-    if (winner.name === 'X') myStyle.bgColor = squareColor.X_COLOR;
-    if (winner.name === 'O') myStyle.bgColor = squareColor.O_COLOR;
+    if (winner.name === PLAYER) myStyle.bgColor = squareColor.X_COLOR;
+    if (winner.name === OPPONENT) myStyle.bgColor = squareColor.O_COLOR;
   }
 
   const styles = useStyles(myStyle);
