@@ -15,6 +15,7 @@
     "@types/react-router-dom": "^5.1.7",
     "@types/redux": "^3.6.0",
     "@types/redux-thunk": "^2.1.0",
+    "lodash": "^4.17.21",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-redux": "^7.2.4",
@@ -50,5 +51,7 @@
       "last 1 safari version"
     ]
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/lodash": "^4.14.170"
+  }
 }

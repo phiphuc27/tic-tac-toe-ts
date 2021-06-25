@@ -1,5 +1,7 @@
+import _ from 'lodash';
 import {
   CLICK_SQUARE,
+  CLICK_SQUARE_COMPUTER,
   MOVE_JUMP,
   NEW_GAME,
   QUIT_GAME,
@@ -18,24 +20,18 @@ const initialState: GameState = {
   winner: { name: '', moves: [] },
   history: [],
   step: 0,
-  score: {
-    X: 0,
-    O: 0,
-  },
+  score: { X: 0, O: 0 },
   opponent: 'player',
 };
 
 const reducer = (state = initialState, action: GameActionTypes): GameState => {
   switch (action.type) {
     case CLICK_SQUARE:
-      const { square } = action;
+    case CLICK_SQUARE_COMPUTER:
+      const { square, board } = action;
       return {
         ...state,
-        board: state.board.map((row, i) =>
-          i === square.row
-            ? row.map((item, j) => (j === square.col ? square.value.toUpperCase() : item))
-            : row
-        ),
+        board: board,
         isTurn: !state.isTurn,
         history: [...state.history.splice(0, state.step), square],
         step: (state.step += 1),
@@ -45,7 +41,7 @@ const reducer = (state = initialState, action: GameActionTypes): GameState => {
       const { winner } = action;
       return {
         ...state,
-        winner: { ...winner, name: winner.name, moves: [...winner.moves] },
+        winner: _.cloneDeep(winner),
         score: {
           ...state.score,
           [winner.name]: (state.score[winner.name] += 1),
@@ -58,7 +54,7 @@ const reducer = (state = initialState, action: GameActionTypes): GameState => {
         board: action.board,
         step: action.step,
         isTurn: action.step % 2 === 0,
-        winner: { ...initialState.winner, name: '', moves: [] },
+        winner: _.cloneDeep(initialState.winner),
       };
 
     case SUBTRACT_SCORE:
@@ -79,18 +75,13 @@ const reducer = (state = initialState, action: GameActionTypes): GameState => {
 
     case NEW_GAME:
       return {
-        ...initialState,
+        ..._.cloneDeep(initialState),
         score: { ...state.score },
         opponent: state.opponent,
-        winner: { ...initialState.winner, moves: [] },
       };
 
     case QUIT_GAME:
-      return {
-        ...initialState,
-        score: { ...initialState.score, X: 0, O: 0 },
-        winner: { ...initialState.winner, moves: [] },
-      };
+      return _.cloneDeep(initialState);
 
     default:
       return state;

@@ -1,5 +1,6 @@
 import {
   CLICK_SQUARE,
+  CLICK_SQUARE_COMPUTER,
   MOVE_JUMP,
   NEW_GAME,
   QUIT_GAME,
@@ -43,6 +44,13 @@ export interface GameState {
 export interface ClickSquareAction {
   type: typeof CLICK_SQUARE;
   square: Square;
+  board: string[][];
+}
+
+export interface ClickSquareComputerAction {
+  type: typeof CLICK_SQUARE_COMPUTER;
+  square: Square;
+  board: string[][];
 }
 
 export interface SetWinnerAction {
@@ -77,6 +85,7 @@ export interface SetOpponentAction {
 
 export type GameActionTypes =
   | ClickSquareAction
+  | ClickSquareComputerAction
   | SetWinnerAction
   | NewGameAction
   | MoveJumpAction

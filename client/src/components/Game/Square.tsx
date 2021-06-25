@@ -1,5 +1,5 @@
 import React from 'react';
-import { createStyles, makeStyles, useTheme } from '@material-ui/core/styles';
+import { createStyles, makeStyles, Theme, useTheme } from '@material-ui/core/styles';
 import { ClearRounded, FiberManualRecordOutlined } from '@material-ui/icons';
 import { Winner } from '../../types/game';
 import { OPPONENT, PLAYER, SQUARE_SIZE } from '../../constants/global';
@@ -17,7 +17,7 @@ interface StyleProps {
   current: boolean;
 }
 
-const useStyles = makeStyles(() =>
+const useStyles = makeStyles(({ palette }: Theme) =>
   createStyles({
     square: ({ bgColor, current }: StyleProps) => ({
       background: bgColor,
@@ -31,10 +31,16 @@ const useStyles = makeStyles(() =>
       filter: current ? 'brightness(90%)' : '',
       transition: 'background 300ms ease-in',
     }),
-    square__text: ({ color }: StyleProps) => ({
-      color,
+    square__text: {
       width: `${SQUARE_SIZE}px`,
       height: `${SQUARE_SIZE}px`,
+      transition: 'color 300ms ease-in',
+    },
+    square__text__x: ({ color }: StyleProps) => ({
+      color: color || palette.primary.main,
+    }),
+    square__text__o: ({ color }: StyleProps) => ({
+      color: color || palette.secondary.main,
     }),
   })
 );
@@ -48,12 +54,6 @@ const Square: React.FC<SquareProps> = ({ winner, value, handleClick, current }) 
     current,
   };
 
-  if (value === PLAYER) {
-    myStyle.color = squareColor.X_COLOR;
-  } else if (value === OPPONENT) {
-    myStyle.color = squareColor.O_COLOR;
-  }
-
   if (winner?.name === value) {
     myStyle.color = '#fff';
     if (winner.name === PLAYER) myStyle.bgColor = squareColor.X_COLOR;
@@ -65,10 +65,16 @@ const Square: React.FC<SquareProps> = ({ winner, value, handleClick, current }) 
   return (
     <div onClick={handleClick} className={styles.square}>
       {value === 'X' ? (
-        <ClearRounded fontSize='large' className={styles.square__text} />
+        <ClearRounded
+          fontSize='large'
+          className={`${styles.square__text} ${styles.square__text__x}`}
+        />
       ) : (
         value === 'O' && (
-          <FiberManualRecordOutlined fontSize='large' className={styles.square__text} />
+          <FiberManualRecordOutlined
+            fontSize='large'
+            className={`${styles.square__text} ${styles.square__text__o}`}
+          />
         )
       )}
     </div>

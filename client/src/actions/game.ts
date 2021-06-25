@@ -1,4 +1,5 @@
 import { Dispatch } from 'redux';
+import _ from 'lodash';
 import {
   CLICK_SQUARE,
   SET_WINNER,
@@ -7,6 +8,7 @@ import {
   QUIT_GAME,
   SUBTRACT_SCORE,
   SET_OPPONENT,
+  CLICK_SQUARE_COMPUTER,
 } from '../constants/game';
 import { BOARD_SIZE, OPPONENT } from '../constants/global';
 import { AppState } from '../store';
@@ -16,9 +18,16 @@ import getBestMove from '../utils/getBestMove';
 import getWinMoves from '../utils/getWinMoves';
 
 // ====================== Dispatch Actions ======================
-const clickSquareDispatch = (square: Square): AppActions => ({
+const clickSquareDispatch = (square: Square, board: string[][]): AppActions => ({
   type: CLICK_SQUARE,
   square,
+  board,
+});
+
+const clickSquareComputerDispatch = (square: Square, board: string[][]): AppActions => ({
+  type: CLICK_SQUARE_COMPUTER,
+  square,
+  board,
 });
 
 const newGameDispatch = (): AppActions => ({
@@ -67,35 +76,41 @@ export const setOpponent = (opponent: string) => (dispatch: Dispatch<AppActions>
 export const clickSquare =
   (square: Square) => (dispatch: Dispatch<AppActions>, getState: () => AppState) => {
     const {
-      game: { board, opponent },
+      game: { board },
     } = getState();
 
-    const tmpBoard = [...board].map((row) => [...row]);
-
+    const tmpBoard = _.cloneDeep(board);
     tmpBoard[square.row][square.col] = square.value;
 
-    dispatch(clickSquareDispatch(square));
+    dispatch(clickSquareDispatch(square, tmpBoard));
 
     const winner = getWinMoves(square, tmpBoard);
 
     if (winner.name) {
       dispatch(setWinnerDispatch(winner));
-      return;
     }
+  };
 
-    // When player play with computer
-    if (opponent === 'computer') {
-      const bestMove = getBestMove(tmpBoard);
+export const clickSquareComputer =
+  () => (dispatch: Dispatch<AppActions>, getState: () => AppState) => {
+    const {
+      game: { board, history },
+    } = getState();
 
-      tmpBoard[bestMove.row][bestMove.col] = bestMove.value;
+    const latestMove = history[history.length - 1];
 
-      dispatch(clickSquareDispatch(bestMove));
+    const tmpBoard = _.cloneDeep(board);
 
-      const winner = getWinMoves(bestMove, tmpBoard);
+    const bestMove = getBestMove(latestMove, tmpBoard);
 
-      if (winner.name) {
-        dispatch(setWinnerDispatch(winner));
-      }
+    tmpBoard[bestMove.row][bestMove.col] = bestMove.value;
+
+    dispatch(clickSquareComputerDispatch(bestMove, tmpBoard));
+
+    const winner = getWinMoves(bestMove, tmpBoard);
+
+    if (winner.name) {
+      dispatch(setWinnerDispatch(winner));
     }
   };
 
