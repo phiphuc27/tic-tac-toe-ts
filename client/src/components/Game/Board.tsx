@@ -34,7 +34,7 @@ const Board: React.FC = () => {
   }, [dispatch, mode]);
 
   const handleClick = (row: number, col: number) => {
-    if (winner || board[row][col]) return;
+    if (winner.name || board[row][col]) return;
 
     const clickedSquare = {
       row,
@@ -53,7 +53,9 @@ const Board: React.FC = () => {
             <Square
               key={i * BOARD_SIZE + j}
               winner={
-                winner?.moves?.some((move) => move.row === i && move.col === j) ? winner : null
+                winner.name && winner.moves?.some((move) => move.row === i && move.col === j)
+                  ? winner
+                  : null
               }
               value={item}
               current={curSquare && i === curSquare.row && j === curSquare.col}

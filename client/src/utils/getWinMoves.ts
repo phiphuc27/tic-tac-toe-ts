@@ -1,4 +1,5 @@
 import { Square, Winner, Move } from '../types/game';
+import { WIN_MOVE_LENGTH } from '../constants/global';
 
 const checkRow = (square: Square, board: string[][]) => {
   const { row, col, value } = square;
@@ -19,13 +20,14 @@ const checkRow = (square: Square, board: string[][]) => {
     prev--;
   }
 
-  if (winMoves.length === 5) {
-    const sort = winMoves.sort((a, b) => a.col - b.col);
-    if (board[row][sort[0].col - 1] === null || board[row][sort[4].col + 1] === null) {
+  const sort = winMoves.sort((a, b) => a.col - b.col);
+
+  if (sort.length === WIN_MOVE_LENGTH) {
+    if (board[row][prev] !== value && board[row][next] !== value) {
       return sort;
     }
   }
-  return null;
+  return sort;
 };
 
 const checkColumn = (square: Square, board: string[][]) => {
@@ -47,16 +49,17 @@ const checkColumn = (square: Square, board: string[][]) => {
     prev--;
   }
 
-  if (winMoves.length === 5) {
-    const sort = winMoves.sort((a, b) => a.row - b.row);
+  const sort = winMoves.sort((a, b) => a.row - b.row);
+
+  if (sort.length === WIN_MOVE_LENGTH) {
     if (
-      (board[sort[0].row - 1] && board[sort[0].row - 1][col] === null) ||
-      (board[sort[4].row + 1] && board[sort[4].row + 1][col] === null)
+      (!board[prev] || board[prev][col] !== value) &&
+      (!board[next] || board[next][col] !== value)
     ) {
       return sort;
     }
   }
-  return null;
+  return sort;
 };
 
 const checkDiagonal = (square: Square, board: string[][]) => {
@@ -82,16 +85,17 @@ const checkDiagonal = (square: Square, board: string[][]) => {
     prevCol--;
   }
 
-  if (winMoves.length === 5) {
-    const sort = winMoves.sort((a, b) => a.row - b.row);
+  const sort = winMoves.sort((a, b) => a.row - b.row);
+
+  if (sort.length === WIN_MOVE_LENGTH) {
     if (
-      (board[sort[0].row - 1] && board[sort[0].row - 1][sort[0].col - 1] === null) ||
-      (board[sort[4].row + 1] && board[sort[4].row + 1][sort[4].col + 1] === null)
+      (!board[prevRow] || board[prevRow][prevCol] !== value) &&
+      (!board[nextRow] || board[nextRow][nextCol] !== value)
     ) {
       return sort;
     }
   }
-  return null;
+  return sort;
 };
 
 const checkDiagonal2 = (square: Square, board: string[][]) => {
@@ -117,35 +121,37 @@ const checkDiagonal2 = (square: Square, board: string[][]) => {
     prevCol--;
   }
 
-  if (winMoves.length === 5) {
-    const sort = winMoves.sort((a, b) => a.col - b.col);
+  const sort = winMoves.sort((a, b) => a.col - b.col);
+
+  if (sort.length === WIN_MOVE_LENGTH) {
     if (
-      (board[sort[0].row + 1] && board[sort[0].row + 1][sort[0].col - 1] === null) ||
-      (board[sort[4].row - 1] && board[sort[4].row - 1][sort[4].col + 1] === null)
+      (!board[prevRow] || board[prevRow][prevCol] !== value) &&
+      (!board[nextRow] || board[nextRow][nextCol] !== value)
     ) {
       return sort;
     }
   }
-  return null;
+  return sort;
 };
 
-const getWinMoves = (square: Square, board: string[][]): Winner | null => {
-  const checkEmpty = board.filter((row) => row.filter((item) => item === null).length > 0);
-  if (!checkEmpty) return { name: 'draw', moves: null };
+const getWinMoves = (square: Square, board: string[][]): Winner => {
+  const isEmpty = board.some((row) => row.some((item) => item === ''));
 
   const { value } = square;
-  if (square) {
-    const moves =
-      checkRow(square, board) ||
-      checkColumn(square, board) ||
-      checkDiagonal(square, board) ||
-      checkDiagonal2(square, board);
+  const moves = [
+    checkRow(square, board),
+    checkColumn(square, board),
+    checkDiagonal(square, board),
+    checkDiagonal2(square, board),
+  ].sort((a, b) => b.length - a.length)[0];
 
-    if (moves !== null) {
-      return { name: value, moves };
-    }
+  if (moves.length === WIN_MOVE_LENGTH) {
+    return { name: value, moves };
   }
-  return null;
+
+  if (!isEmpty) return { name: 'draw', moves };
+
+  return { name: '', moves };
 };
 
 export default getWinMoves;

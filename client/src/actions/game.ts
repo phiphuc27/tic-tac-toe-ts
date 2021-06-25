@@ -70,27 +70,30 @@ export const clickSquare =
       game: { board, opponent },
     } = getState();
 
+    const tmpBoard = [...board].map((row) => [...row]);
+
+    tmpBoard[square.row][square.col] = square.value;
+
     dispatch(clickSquareDispatch(square));
 
-    const winner = getWinMoves(square, board);
+    const winner = getWinMoves(square, tmpBoard);
 
-    if (winner) {
+    if (winner.name) {
       dispatch(setWinnerDispatch(winner));
+      return;
     }
 
     // When player play with computer
     if (opponent === 'computer') {
-      const {
-        game: { board: newBoard },
-      } = getState();
+      const bestMove = getBestMove(tmpBoard);
 
-      const bestMove = getBestMove(newBoard, OPPONENT);
+      tmpBoard[bestMove.row][bestMove.col] = bestMove.value;
 
       dispatch(clickSquareDispatch(bestMove));
 
-      const winner = getWinMoves(bestMove, newBoard);
+      const winner = getWinMoves(bestMove, tmpBoard);
 
-      if (winner) {
+      if (winner.name) {
         dispatch(setWinnerDispatch(winner));
       }
     }
@@ -102,11 +105,11 @@ export const moveJump =
       game: { history, winner },
     } = getState();
 
-    if (winner) dispatch(subtractScoreDispatch(winner.name, 1));
+    if (winner.name && winner.name !== 'draw') dispatch(subtractScoreDispatch(winner.name, 1));
 
     const tmpBoard = Array(BOARD_SIZE)
       .fill(0)
-      .map(() => Array(BOARD_SIZE).fill(null));
+      .map(() => Array(BOARD_SIZE).fill(''));
     const newHistory = [...history].splice(0, step);
     const square = newHistory[step - 1];
 
@@ -119,7 +122,7 @@ export const moveJump =
     if (square) {
       const winner = getWinMoves(square, tmpBoard);
 
-      if (winner) {
+      if (winner.name) {
         dispatch(setWinnerDispatch(winner));
       }
     }

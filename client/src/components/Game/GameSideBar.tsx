@@ -20,7 +20,7 @@ const GameSideBar: React.FC<GameSideBarProps> = () => {
   const redirectHistory = useHistory();
 
   useEffect(() => {
-    if (!winner) {
+    if (!winner.name) {
       setStatus(`Next Player: ${isTurn ? 'X' : 'O'}`);
     } else {
       const { name } = winner;
@@ -33,7 +33,7 @@ const GameSideBar: React.FC<GameSideBarProps> = () => {
   }, [winner, isTurn]);
 
   return (
-    <Paper elevation={1} style={{ height: '100%' }}>
+    <Paper elevation={1} style={{ height: '100%', minHeight: '640px' }}>
       <Box padding={2}>
         <Box>
           <ButtonBox gap={1}>

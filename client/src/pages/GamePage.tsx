@@ -8,7 +8,7 @@ interface GamePageProps {}
 const GamePage: React.FC<GamePageProps> = () => {
   return (
     <Grid container spacing={3}>
-      <Grid item style={{ display: 'flex', alignItems: 'center' }} xs={7}>
+      <Grid item style={{ display: 'grid', alignItems: 'center' }} xs={7}>
         <Board />
       </Grid>
       <Grid item xs={5}>

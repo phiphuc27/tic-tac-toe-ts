@@ -2,7 +2,7 @@ import React from 'react';
 import { createStyles, makeStyles, useTheme } from '@material-ui/core/styles';
 import { ClearRounded, FiberManualRecordOutlined } from '@material-ui/icons';
 import { Winner } from '../../types/game';
-import { OPPONENT, PLAYER } from '../../constants/global';
+import { OPPONENT, PLAYER, SQUARE_SIZE } from '../../constants/global';
 
 interface SquareProps {
   value: string | null;
@@ -22,8 +22,8 @@ const useStyles = makeStyles(() =>
     square: ({ bgColor, current }: StyleProps) => ({
       background: bgColor,
       border: `1px solid #999`,
-      width: '33px',
-      height: '33px',
+      width: `${SQUARE_SIZE}px`,
+      height: `${SQUARE_SIZE}px`,
       marginRight: '-1px',
       marginTop: '-1px',
       padding: 0,
@@ -33,8 +33,8 @@ const useStyles = makeStyles(() =>
     }),
     square__text: ({ color }: StyleProps) => ({
       color,
-      width: '33px',
-      height: '33px',
+      width: `${SQUARE_SIZE}px`,
+      height: `${SQUARE_SIZE}px`,
     }),
   })
 );

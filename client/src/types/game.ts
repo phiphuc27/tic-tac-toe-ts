@@ -21,7 +21,7 @@ export interface Move {
 
 export interface Winner {
   name: string;
-  moves: Move[] | null;
+  moves: Move[];
 }
 
 export interface Score {
@@ -33,7 +33,7 @@ export interface Score {
 export interface GameState {
   board: string[][];
   isTurn: boolean;
-  winner: Winner | null;
+  winner: Winner;
   history: Square[];
   step: number;
   score: Score;

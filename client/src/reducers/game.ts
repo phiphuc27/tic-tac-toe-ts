@@ -13,9 +13,9 @@ import { GameActionTypes, GameState } from '../types/game';
 const initialState: GameState = {
   board: Array(BOARD_SIZE)
     .fill(0)
-    .map(() => Array(BOARD_SIZE).fill(null)),
+    .map(() => Array(BOARD_SIZE).fill('')),
   isTurn: true,
-  winner: null,
+  winner: { name: '', moves: [] },
   history: [],
   step: 0,
   score: {
@@ -45,7 +45,7 @@ const reducer = (state = initialState, action: GameActionTypes): GameState => {
       const { winner } = action;
       return {
         ...state,
-        winner: winner,
+        winner: { ...winner, name: winner.name, moves: [...winner.moves] },
         score: {
           ...state.score,
           [winner.name]: (state.score[winner.name] += 1),
@@ -58,7 +58,7 @@ const reducer = (state = initialState, action: GameActionTypes): GameState => {
         board: action.board,
         step: action.step,
         isTurn: action.step % 2 === 0,
-        winner: null,
+        winner: { ...initialState.winner, name: '', moves: [] },
       };
 
     case SUBTRACT_SCORE:
@@ -78,10 +78,19 @@ const reducer = (state = initialState, action: GameActionTypes): GameState => {
     }
 
     case NEW_GAME:
-      return { ...initialState, score: { ...state.score }, opponent: state.opponent };
+      return {
+        ...initialState,
+        score: { ...state.score },
+        opponent: state.opponent,
+        winner: { ...initialState.winner, moves: [] },
+      };
 
     case QUIT_GAME:
-      return { ...initialState, score: { ...initialState.score, X: 0, O: 0 } };
+      return {
+        ...initialState,
+        score: { ...initialState.score, X: 0, O: 0 },
+        winner: { ...initialState.winner, moves: [] },
+      };
 
     default:
       return state;
