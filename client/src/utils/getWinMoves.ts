@@ -1,5 +1,5 @@
-import { Square, Winner, Move } from '../types/game';
-import { WIN_MOVE_LENGTH } from '../constants/global';
+import { Square, Winner, Move } from '../pages/Game/gameTypes';
+import { WIN_MOVE_LENGTH } from '../global/globalConstants';
 
 const checkRow = (square: Square, board: string[][]) => {
   const { row, col, value } = square;

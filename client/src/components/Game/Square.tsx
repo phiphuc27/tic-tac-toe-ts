@@ -1,8 +1,8 @@
 import React from 'react';
 import { createStyles, makeStyles, Theme, useTheme } from '@material-ui/core/styles';
 import { ClearRounded, FiberManualRecordOutlined } from '@material-ui/icons';
-import { Winner } from '../../types/game';
-import { OPPONENT, PLAYER, SQUARE_SIZE } from '../../constants/global';
+import { Winner } from '../../pages/Game/gameTypes';
+import { OPPONENT, PLAYER, SQUARE_SIZE } from '../../global/globalConstants';
 
 interface SquareProps {
   value: string | null;

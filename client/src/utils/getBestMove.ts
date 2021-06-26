@@ -1,5 +1,5 @@
-import { Square } from '../types/game';
-import { AI_DEPTH, BOARD_SIZE, OPPONENT, PLAYER } from '../constants/global';
+import { Square } from '../pages/Game/gameTypes';
+import { BOARD_SIZE, OPPONENT, PLAYER } from '../global/globalConstants';
 import getWinMoves from './getWinMoves';
 import _ from 'lodash';
 
@@ -33,7 +33,6 @@ const getBestMove = (board: string[][]) => {
       bestEval = curEval;
     }
   }
-  console.log(bestSquare, bestEval);
 
   return bestSquare;
 };
@@ -46,10 +45,9 @@ const minimax = (
   alpha: number,
   beta: number
 ): number => {
-  const { square, score } = move; //<- O move. need to get X move
+  const { square, score } = move;
   const winner = getWinMoves(square, board);
-  const evalPlayerBoard = getEmptyBoard(square, board); // O optimize Array
-  console.log(evalPlayerBoard);
+  const evalPlayerBoard = getEmptyBoard(square, board);
   if (winner.name || depth === 0) {
     if (winner.name === PLAYER) return score + depth;
     if (winner.name === OPPONENT) return score - depth;
@@ -122,8 +120,6 @@ const getEmptyBoard = (square: Square, board: string[][]): EvalBoard[] => {
         const playerWinPoints = checkWinner.moves.length;
         const opponentWinPoints = checkOpponentWinner.moves.length;
 
-        // if current square is opponent and is about to win, set the score higher
-        // to choose that move to prevent the win
         let tmpScore = Math.abs(playerWinPoints - opponentWinPoints) * BOARD_SIZE - Math.max(i, j);
 
         maxScore = Math.max(tmpScore, maxScore);

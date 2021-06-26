@@ -2,9 +2,9 @@ import React from 'react';
 import { NavLink as RouterLink } from 'react-router-dom';
 import { AppBar, Toolbar, Typography, Button, Link } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import logo from '../../logo.svg';
-import ButtonBox from '../shared/form/ButtonBox';
+import ButtonBox from '../Form/ButtonBox';
 import NavMenu from './NavMenu';
+import logo from '../../logo.svg';
 
 const useStyles = makeStyles(({ palette, typography }: Theme) =>
   createStyles({

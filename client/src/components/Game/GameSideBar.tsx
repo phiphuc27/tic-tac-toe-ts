@@ -1,21 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useAppSelector, useAppDispatch } from '../../app/store';
 import { useHistory } from 'react-router-dom';
-import { AppState } from '../../store';
-import { newGame, moveJump } from '../../actions/game';
 import { Paper, Divider, Box, Typography } from '@material-ui/core';
 import { Autorenew, ExitToApp, Undo, Redo } from '@material-ui/icons';
-import ButtonBox from '../shared/form/ButtonBox';
-import ButtonContained from '../shared/form/ButtonContained';
+import { newGame } from '../../pages/Game/gameSlice';
+import { moveJumpAction } from '../../pages/Game/gameActions';
+import ButtonBox from '../Form/ButtonBox';
+import ButtonContained from '../Form/ButtonContained';
 import History from './History';
 
 interface GameSideBarProps {}
 
 const GameSideBar: React.FC<GameSideBarProps> = () => {
-  const dispatch = useDispatch();
-  const { winner, isTurn, step, history, score, opponent } = useSelector(
-    (state: AppState) => state.game
-  );
+  const dispatch = useAppDispatch();
+  const { winner, isTurn, step, history, score, opponent } = useAppSelector((state) => state.game);
   const [status, setStatus] = useState('');
   const redirectHistory = useHistory();
 
@@ -47,13 +45,13 @@ const GameSideBar: React.FC<GameSideBarProps> = () => {
           <ButtonBox gap={1}>
             <ButtonContained
               startIcon={<Undo />}
-              onClick={() => dispatch(moveJump(opponent === 'player' ? step - 1 : step - 2))}
+              onClick={() => dispatch(moveJumpAction(opponent === 'player' ? step - 1 : step - 2))}
               disabled={step < 1}>
               Undo
             </ButtonContained>
             <ButtonContained
               startIcon={<Redo />}
-              onClick={() => dispatch(moveJump(opponent === 'player' ? step + 1 : step + 2))}
+              onClick={() => dispatch(moveJumpAction(opponent === 'player' ? step + 1 : step + 2))}
               disabled={step >= history.length}>
               Redo
             </ButtonContained>
