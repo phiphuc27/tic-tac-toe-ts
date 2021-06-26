@@ -24,10 +24,10 @@ const checkRow = (square: Square, board: string[][]) => {
 
   if (sort.length === WIN_MOVE_LENGTH) {
     if (board[row][prev] !== value && board[row][next] !== value) {
-      return sort;
+      return { sort, win: true };
     }
   }
-  return sort;
+  return { sort, win: false };
 };
 
 const checkColumn = (square: Square, board: string[][]) => {
@@ -56,10 +56,10 @@ const checkColumn = (square: Square, board: string[][]) => {
       (!board[prev] || board[prev][col] !== value) &&
       (!board[next] || board[next][col] !== value)
     ) {
-      return sort;
+      return { sort, win: true };
     }
   }
-  return sort;
+  return { sort, win: false };
 };
 
 const checkDiagonal = (square: Square, board: string[][]) => {
@@ -92,10 +92,10 @@ const checkDiagonal = (square: Square, board: string[][]) => {
       (!board[prevRow] || board[prevRow][prevCol] !== value) &&
       (!board[nextRow] || board[nextRow][nextCol] !== value)
     ) {
-      return sort;
+      return { sort, win: true };
     }
   }
-  return sort;
+  return { sort, win: false };
 };
 
 const checkDiagonal2 = (square: Square, board: string[][]) => {
@@ -128,10 +128,10 @@ const checkDiagonal2 = (square: Square, board: string[][]) => {
       (!board[prevRow] || board[prevRow][prevCol] !== value) &&
       (!board[nextRow] || board[nextRow][nextCol] !== value)
     ) {
-      return sort;
+      return { sort, win: true };
     }
   }
-  return sort;
+  return { sort, win: false };
 };
 
 const getWinMoves = (square: Square, board: string[][]): Winner => {
@@ -143,15 +143,15 @@ const getWinMoves = (square: Square, board: string[][]): Winner => {
     checkColumn(square, board),
     checkDiagonal(square, board),
     checkDiagonal2(square, board),
-  ].sort((a, b) => b.length - a.length)[0];
+  ].sort((a, b) => b.sort.length - a.sort.length)[0];
 
-  if (moves.length === WIN_MOVE_LENGTH) {
-    return { name: value, moves };
+  if (moves.sort.length === WIN_MOVE_LENGTH && moves.win) {
+    return { name: value, moves: moves.sort };
   }
 
-  if (!isEmpty) return { name: 'draw', moves };
+  if (!isEmpty) return { name: 'draw', moves: moves.sort };
 
-  return { name: '', moves };
+  return { name: '', moves: moves.sort };
 };
 
 export default getWinMoves;

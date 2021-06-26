@@ -10,7 +10,7 @@ import {
   SET_OPPONENT,
   CLICK_SQUARE_COMPUTER,
 } from '../constants/game';
-import { BOARD_SIZE, OPPONENT } from '../constants/global';
+import { BOARD_SIZE } from '../constants/global';
 import { AppState } from '../store';
 import { AppActions } from '../types';
 import { Square, Winner } from '../types/game';
@@ -94,14 +94,12 @@ export const clickSquare =
 export const clickSquareComputer =
   () => (dispatch: Dispatch<AppActions>, getState: () => AppState) => {
     const {
-      game: { board, history },
+      game: { board },
     } = getState();
-
-    const latestMove = history[history.length - 1];
 
     const tmpBoard = _.cloneDeep(board);
 
-    const bestMove = getBestMove(latestMove, tmpBoard);
+    const bestMove = getBestMove(tmpBoard);
 
     tmpBoard[bestMove.row][bestMove.col] = bestMove.value;
 

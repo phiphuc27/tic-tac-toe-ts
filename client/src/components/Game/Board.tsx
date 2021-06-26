@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { AppDispatch, AppState } from '../../store';
-import { BOARD_SIZE, OPPONENT, PLAYER, WIN_MOVE_LENGTH } from '../../constants/global';
+import { BOARD_SIZE, OPPONENT, PLAYER } from '../../constants/global';
 import { Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Square as SquareType } from '../../types/game';
@@ -35,7 +35,7 @@ const Board: React.FC = () => {
   }, [dispatch, mode]);
 
   useEffect(() => {
-    if (!isTurn && mode === 'computer' && winner.moves.length < WIN_MOVE_LENGTH) {
+    if (!isTurn && mode === 'computer' && !winner.name) {
       dispatch(clickSquareComputer());
     }
   }, [dispatch, isTurn, mode, winner]);
