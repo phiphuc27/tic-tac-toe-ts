@@ -27,7 +27,7 @@ const Board: React.FC = () => {
   const curSquare = history[step - 1];
 
   useEffect(() => {
-    dispatch(setOpponent(mode));
+    dispatch(setOpponent({ opponent: mode }));
 
     return () => {
       dispatch(quitGame());
