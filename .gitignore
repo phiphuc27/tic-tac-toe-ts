@@ -5,7 +5,6 @@
 build/
 
 # Dependencies
-node_modules
 node_modules/
 package-lock.json
 *.log
@@ -31,6 +30,8 @@ firebase-error.log*
 .firebase/*
 __generated__
 .DS_Store
+*.env
+*.env.example
 .env.local
 .env.*.local
 .eslintcache
