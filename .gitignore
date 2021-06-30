@@ -1,7 +1,8 @@
 # Include your project-specific ignores in this file
 # See https://help.github.com/ignore-files/ for more about ignoring files
 
-# Build output
+# Build outpubt
+build
 build/
 
 # Dependencies
