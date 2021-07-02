@@ -15,35 +15,26 @@ Object.defineProperty(exports, "__esModule", { value: true });
 require("reflect-metadata");
 require("dotenv-safe/config");
 const express_1 = __importDefault(require("express"));
-const express_session_1 = __importDefault(require("express-session"));
-const connect_mongo_1 = __importDefault(require("connect-mongo"));
+const cors_1 = __importDefault(require("cors"));
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const apollo_server_express_1 = require("apollo-server-express");
 const typeorm_1 = require("typeorm");
 const type_graphql_1 = require("type-graphql");
 const constants_1 = require("./constants");
 const user_1 = require("./resolvers/user");
+const refreshToken_1 = require("./controllers/refreshToken");
 const PORT = process.env.PORT || 5000;
 const main = () => __awaiter(void 0, void 0, void 0, function* () {
     let options = yield typeorm_1.getConnectionOptions();
     yield typeorm_1.createConnection(Object.assign(Object.assign({}, options), { synchronize: !constants_1.__prod__ }));
     console.log(`DB ${options.database} connected...`);
     const app = express_1.default();
-    app.use(express_session_1.default({
-        name: 'pid',
-        secret: process.env.SESSION_SECRET,
-        store: connect_mongo_1.default.create({
-            mongoUrl: process.env.MONGO_URL,
-            touchAfter: 60 * 60 * 24 * 7,
-        }),
-        cookie: {
-            maxAge: 1000 * 60 * 60 * 24 * 7,
-            httpOnly: true,
-            sameSite: 'lax',
-            secure: constants_1.__prod__,
-        },
-        resave: false,
-        saveUninitialized: false,
+    app.use(cors_1.default({
+        origin: process.env.CORS_ORIGIN,
+        credentials: true,
     }));
+    app.use(cookie_parser_1.default());
+    app.post('/refresh_token', refreshToken_1.refreshToken);
     const apolloServer = new apollo_server_express_1.ApolloServer({
         schema: yield type_graphql_1.buildSchema({
             resolvers: [user_1.UserResolver],
@@ -51,8 +42,8 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
         }),
         context: ({ req, res }) => ({ req, res }),
     });
-    apolloServer.applyMiddleware({ app });
+    apolloServer.applyMiddleware({ app, cors: false });
     app.listen(PORT, () => console.log(`Server is running on PORT ${PORT}`));
 });
-main();
+main().catch((err) => console.error(err));
 //# sourceMappingURL=index.js.map

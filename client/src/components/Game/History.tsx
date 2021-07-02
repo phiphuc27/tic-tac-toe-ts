@@ -12,7 +12,7 @@ import {
   ListItemIcon,
   ListItemText,
 } from '@material-ui/core';
-import Select from '../Form/Select';
+import Select from '../Inputs/Select';
 
 const History: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -29,12 +29,17 @@ const History: React.FC = () => {
   }, [step, isAscending]);
 
   let historyDisplay = [...history];
-  historyDisplay = [{ row: -1, col: -1, value: 'Go to game start' }, ...historyDisplay];
+  historyDisplay = [
+    { row: -1, col: -1, value: 'Go to game start' },
+    ...historyDisplay,
+  ];
 
   const historyList = historyDisplay.map((item, idx) => {
     const labelId = `history-list-label-${idx}`;
     const text =
-      idx === 0 ? item.value : `${item.value} move to square (${item.row + 1}, ${item.col + 1})`;
+      idx === 0
+        ? item.value
+        : `${item.value} move to square (${item.row + 1}, ${item.col + 1})`;
 
     return (
       <ListItem
@@ -51,7 +56,11 @@ const History: React.FC = () => {
             inputProps={{ 'aria-labelledby': labelId }}
           />
         </ListItemIcon>
-        <ListItemText id={labelId} primary={text} primaryTypographyProps={{ variant: 'button' }} />
+        <ListItemText
+          id={labelId}
+          primary={text}
+          primaryTypographyProps={{ variant: 'button' }}
+        />
       </ListItem>
     );
   });

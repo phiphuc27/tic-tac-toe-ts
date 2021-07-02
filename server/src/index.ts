@@ -1,14 +1,15 @@
 import 'reflect-metadata';
 import 'dotenv-safe/config';
 import express from 'express';
-import session from 'express-session';
-import MongoStore from 'connect-mongo';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import { ApolloServer } from 'apollo-server-express';
 import { createConnection, getConnectionOptions } from 'typeorm';
 import { buildSchema } from 'type-graphql';
 import { __prod__ } from './constants';
 import { UserResolver } from './resolvers/user';
 import { MyContext } from './types/ContextType';
+import { refreshToken } from './controllers/refreshToken';
 
 const PORT = process.env.PORT || 5000;
 
@@ -20,25 +21,16 @@ const main = async () => {
 
   const app = express();
 
-  // Add session middleware
   app.use(
-    session({
-      name: 'pid',
-      secret: process.env.SESSION_SECRET,
-      store: MongoStore.create({
-        mongoUrl: process.env.MONGO_URL,
-        touchAfter: 60 * 60 * 24 * 7, // 7 day in second
-      }),
-      cookie: {
-        maxAge: 1000 * 60 * 60 * 24 * 7, // 7 day in millisecond
-        httpOnly: true,
-        sameSite: 'lax',
-        secure: __prod__,
-      },
-      resave: false,
-      saveUninitialized: false,
+    cors({
+      origin: process.env.CORS_ORIGIN,
+      credentials: true,
     })
   );
+  app.use(cookieParser());
+
+  // User send refresh token and server will give back a new access token
+  app.post('/refresh_token', refreshToken);
 
   // Connect to Graphql
   const apolloServer = new ApolloServer({
@@ -49,9 +41,9 @@ const main = async () => {
     context: ({ req, res }): MyContext => ({ req, res }),
   });
 
-  apolloServer.applyMiddleware({ app });
+  apolloServer.applyMiddleware({ app, cors: false });
 
   app.listen(PORT, () => console.log(`Server is running on PORT ${PORT}`));
 };
 
-main();
+main().catch((err) => console.error(err));

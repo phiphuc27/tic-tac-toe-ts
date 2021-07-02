@@ -5,15 +5,17 @@ import { Paper, Divider, Box, Typography } from '@material-ui/core';
 import { Autorenew, ExitToApp, Undo, Redo } from '@material-ui/icons';
 import { newGame } from '../../pages/Game/gameSlice';
 import { moveJumpAction } from '../../pages/Game/gameActions';
-import ButtonBox from '../Form/ButtonBox';
-import ButtonContained from '../Form/ButtonContained';
+import ButtonBox from '../Inputs/ButtonBox';
+import ButtonBlock from '../Inputs/ButtonBlock';
 import History from './History';
 
 interface GameSideBarProps {}
 
 const GameSideBar: React.FC<GameSideBarProps> = () => {
   const dispatch = useAppDispatch();
-  const { winner, isTurn, step, history, score, opponent } = useAppSelector((state) => state.game);
+  const { winner, isTurn, step, history, score, opponent } = useAppSelector(
+    (state) => state.game
+  );
   const [status, setStatus] = useState('');
   const redirectHistory = useHistory();
 
@@ -31,30 +33,42 @@ const GameSideBar: React.FC<GameSideBarProps> = () => {
   }, [winner, isTurn]);
 
   return (
-    <Paper elevation={1} style={{ height: '100%', minHeight: '640px' }}>
+    <Paper elevation={2} style={{ height: '100%', minHeight: '640px' }}>
       <Box padding={2}>
         <Box>
           <ButtonBox gap={1}>
-            <ButtonContained startIcon={<Autorenew />} onClick={() => dispatch(newGame())}>
+            <ButtonBlock
+              startIcon={<Autorenew />}
+              onClick={() => dispatch(newGame())}>
               New Game
-            </ButtonContained>
-            <ButtonContained startIcon={<ExitToApp />} onClick={() => redirectHistory.push('/')}>
+            </ButtonBlock>
+            <ButtonBlock
+              startIcon={<ExitToApp />}
+              onClick={() => redirectHistory.push('/')}>
               Quit Game
-            </ButtonContained>
+            </ButtonBlock>
           </ButtonBox>
           <ButtonBox gap={1}>
-            <ButtonContained
+            <ButtonBlock
               startIcon={<Undo />}
-              onClick={() => dispatch(moveJumpAction(opponent === 'player' ? step - 1 : step - 2))}
+              onClick={() =>
+                dispatch(
+                  moveJumpAction(opponent === 'player' ? step - 1 : step - 2)
+                )
+              }
               disabled={step < 1}>
               Undo
-            </ButtonContained>
-            <ButtonContained
+            </ButtonBlock>
+            <ButtonBlock
               startIcon={<Redo />}
-              onClick={() => dispatch(moveJumpAction(opponent === 'player' ? step + 1 : step + 2))}
+              onClick={() =>
+                dispatch(
+                  moveJumpAction(opponent === 'player' ? step + 1 : step + 2)
+                )
+              }
               disabled={step >= history.length}>
               Redo
-            </ButtonContained>
+            </ButtonBlock>
           </ButtonBox>
         </Box>
         <Divider style={{ margin: '1rem 0' }} />

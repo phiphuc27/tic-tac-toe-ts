@@ -1,13 +1,8 @@
 import { Request, Response } from 'express';
-import { Session } from 'express-session';
-
-declare module 'express-session' {
-  export interface SessionData {
-    userID: string;
-  }
-}
+import { JwtPayload } from 'jsonwebtoken';
 
 export type MyContext = {
-  req: Request & { session: Session };
+  req: Request;
   res: Response;
+  payload?: JwtPayload;
 };

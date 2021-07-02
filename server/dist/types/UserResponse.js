@@ -29,13 +29,17 @@ exports.FieldError = FieldError;
 let UserResponse = class UserResponse {
 };
 __decorate([
+    type_graphql_1.Field(() => String, { nullable: true }),
+    __metadata("design:type", String)
+], UserResponse.prototype, "accessToken", void 0);
+__decorate([
     type_graphql_1.Field(() => User_1.User, { nullable: true }),
     __metadata("design:type", User_1.User)
 ], UserResponse.prototype, "user", void 0);
 __decorate([
-    type_graphql_1.Field(() => [FieldError], { nullable: true }),
-    __metadata("design:type", Array)
-], UserResponse.prototype, "errors", void 0);
+    type_graphql_1.Field(() => FieldError, { nullable: true }),
+    __metadata("design:type", FieldError)
+], UserResponse.prototype, "error", void 0);
 UserResponse = __decorate([
     type_graphql_1.ObjectType()
 ], UserResponse);

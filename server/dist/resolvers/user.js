@@ -48,15 +48,10 @@ const type_graphql_1 = require("type-graphql");
 const UserResponse_1 = require("../types/UserResponse");
 const UserInput_1 = require("../types/UserInput");
 const formatValidateErrors_1 = require("../utils/formatValidateErrors");
-const registerSchema = yup.object().shape({
-    email: yup.string().email().required(),
-    username: yup.string().required(),
-    password: yup.string().min(6).required(),
-});
-const loginSchema = yup.object().shape({
-    email: yup.string().email().required(),
-    password: yup.string().required(),
-});
+const isAuth_1 = require("../middleware/isAuth");
+const generateToken_1 = require("../utils/generateToken");
+const setRefreshToken_1 = require("../utils/setRefreshToken");
+const typeorm_1 = require("typeorm");
 let UserResolver = class UserResolver {
     users() {
         return User_1.User.find({});
@@ -64,19 +59,21 @@ let UserResolver = class UserResolver {
     user(id) {
         return User_1.User.findOne(id);
     }
-    me({ req }) {
-        if (!req.session.userID)
-            return null;
-        return User_1.User.findOne(req.session.userID);
+    me({ payload }) {
+        return User_1.User.findOne(payload === null || payload === void 0 ? void 0 : payload.userID);
     }
-    register(input, { req }) {
+    register(input, { res }) {
         return __awaiter(this, void 0, void 0, function* () {
+            const registerSchema = yup.object().shape({
+                email: yup.string().email().required(),
+                username: yup.string().required(),
+                password: yup.string().min(6).required(),
+            });
             try {
-                yield registerSchema.validate(input, { abortEarly: false });
+                yield registerSchema.validate(input);
             }
-            catch (error) {
-                const errors = formatValidateErrors_1.formatValidateErrors(error);
-                return { errors };
+            catch (err) {
+                return { error: formatValidateErrors_1.formatValidateErrors(err) };
             }
             try {
                 const hashedPassword = yield argon2.hash(input.password);
@@ -85,75 +82,79 @@ let UserResolver = class UserResolver {
                     email: input.email,
                     password: hashedPassword,
                 }).save();
-                req.session.userID = user.id;
-                return { user };
+                const accessToken = generateToken_1.generateAccessToken(user);
+                setRefreshToken_1.setRefreshToken(res, generateToken_1.generateRefreshToken(user));
+                return { accessToken, user };
             }
-            catch (error) {
-                if (error.code === 'ER_DUP_ENTRY') {
+            catch (err) {
+                if (err.code === 'ER_DUP_ENTRY') {
                     return {
-                        errors: [
-                            {
-                                field: 'username',
-                                message: 'Email or username is already taken.',
-                            },
-                        ],
+                        error: {
+                            field: 'username',
+                            message: 'Email or username is already taken.',
+                        },
                     };
                 }
                 return {
-                    errors: [
-                        {
-                            field: 'server',
-                            message: error.message,
-                        },
-                    ],
+                    error: {
+                        field: 'server',
+                        message: err.message,
+                    },
                 };
             }
         });
     }
-    login(input, { req }) {
+    login(input, { res }) {
         return __awaiter(this, void 0, void 0, function* () {
+            const loginSchema = yup.object().shape({
+                email: yup.string().email().required(),
+                password: yup.string().required(),
+            });
             try {
-                yield loginSchema.validate(input, { abortEarly: false });
+                yield loginSchema.validate(input);
+            }
+            catch (err) {
+                return { error: formatValidateErrors_1.formatValidateErrors(err) };
+            }
+            try {
                 const user = yield User_1.User.findOne({ email: input.email });
                 if (!user) {
                     return {
-                        errors: [
-                            {
-                                field: 'email',
-                                message: 'Incorrect email or password.',
-                            },
-                        ],
+                        error: {
+                            field: 'email',
+                            message: 'Incorrect email or password.',
+                        },
                     };
                 }
                 const isValidPassword = yield argon2.verify(user.password, input.password);
                 if (!isValidPassword) {
                     return {
-                        errors: [
-                            {
-                                field: 'email',
-                                message: 'Incorrect email or password.',
-                            },
-                        ],
+                        error: {
+                            field: 'email',
+                            message: 'Incorrect email or password.',
+                        },
                     };
                 }
-                req.session.userID = user.id;
-                return { user };
+                const accessToken = generateToken_1.generateAccessToken(user);
+                setRefreshToken_1.setRefreshToken(res, generateToken_1.generateRefreshToken(user));
+                return { accessToken, user };
             }
             catch (error) {
-                console.error(error);
-                if (error.name === 'ValidationError') {
-                    const errors = formatValidateErrors_1.formatValidateErrors(error);
-                    return { errors };
-                }
                 return {
-                    errors: [
-                        {
-                            field: 'server',
-                            message: error.message,
-                        },
-                    ],
+                    error: {
+                        field: 'server',
+                        message: error.message,
+                    },
                 };
             }
+        });
+    }
+    revokeRefreshToken(userId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield typeorm_1.getConnection()
+                .getRepository(User_1.User)
+                .increment({ id: userId }, 'tokenVersion', 1);
+            return true;
         });
     }
     deleteUser(id) {
@@ -166,8 +167,7 @@ let UserResolver = class UserResolver {
                 return true;
             }
             catch (error) {
-                console.error(error);
-                return error;
+                throw error;
             }
         });
     }
@@ -187,6 +187,7 @@ __decorate([
 ], UserResolver.prototype, "user", null);
 __decorate([
     type_graphql_1.Query(() => User_1.User, { nullable: true }),
+    type_graphql_1.UseMiddleware(isAuth_1.isAuth),
     __param(0, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -210,6 +211,14 @@ __decorate([
 ], UserResolver.prototype, "login", null);
 __decorate([
     type_graphql_1.Mutation(() => Boolean),
+    __param(0, type_graphql_1.Arg('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "revokeRefreshToken", null);
+__decorate([
+    type_graphql_1.Mutation(() => Boolean),
+    type_graphql_1.UseMiddleware(isAuth_1.isAuth),
     __param(0, type_graphql_1.Arg('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
