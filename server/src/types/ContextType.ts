@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { JwtPayload } from 'jsonwebtoken';
+import { User } from '../entities/User';
 
 export type MyContext = {
   req: Request;
   res: Response;
-  payload?: JwtPayload;
+  user?: User;
 };

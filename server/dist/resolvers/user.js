@@ -51,7 +51,6 @@ const formatValidateErrors_1 = require("../utils/formatValidateErrors");
 const isAuth_1 = require("../middleware/isAuth");
 const generateToken_1 = require("../utils/generateToken");
 const setRefreshToken_1 = require("../utils/setRefreshToken");
-const typeorm_1 = require("typeorm");
 let UserResolver = class UserResolver {
     users() {
         return User_1.User.find({});
@@ -59,8 +58,8 @@ let UserResolver = class UserResolver {
     user(id) {
         return User_1.User.findOne(id);
     }
-    me({ payload }) {
-        return User_1.User.findOne(payload === null || payload === void 0 ? void 0 : payload.userID);
+    me({ user }) {
+        return user;
     }
     register(input, { res }) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -149,13 +148,14 @@ let UserResolver = class UserResolver {
             }
         });
     }
-    revokeRefreshToken(userId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            yield typeorm_1.getConnection()
-                .getRepository(User_1.User)
-                .increment({ id: userId }, 'tokenVersion', 1);
+    logout({ res }) {
+        try {
+            setRefreshToken_1.setRefreshToken(res, '');
             return true;
-        });
+        }
+        catch (_a) {
+            return false;
+        }
     }
     deleteUser(id) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -211,11 +211,12 @@ __decorate([
 ], UserResolver.prototype, "login", null);
 __decorate([
     type_graphql_1.Mutation(() => Boolean),
-    __param(0, type_graphql_1.Arg('userId')),
+    type_graphql_1.UseMiddleware(isAuth_1.isAuth),
+    __param(0, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], UserResolver.prototype, "revokeRefreshToken", null);
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], UserResolver.prototype, "logout", null);
 __decorate([
     type_graphql_1.Mutation(() => Boolean),
     type_graphql_1.UseMiddleware(isAuth_1.isAuth),

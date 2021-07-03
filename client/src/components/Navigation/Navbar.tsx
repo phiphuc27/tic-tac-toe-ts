@@ -1,12 +1,10 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
-import { AppBar, Toolbar, Typography, Button } from '@material-ui/core';
+import { AppBar, Toolbar, Typography } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import ButtonBox from '../Inputs/ButtonBox';
 import Link from './Link';
 import NavMenu from './NavMenu';
+import NavAccount from './NavAccount';
 import logo from '../../logo.svg';
-import { useMeQuery } from '../../generated/graphql';
 
 const useStyles = makeStyles(({ palette, typography }: Theme) =>
   createStyles({
@@ -33,39 +31,7 @@ const useStyles = makeStyles(({ palette, typography }: Theme) =>
 );
 
 const Navbar: React.FC = () => {
-  const { data, loading } = useMeQuery();
-  const location = useLocation();
   const styles = useStyles();
-
-  let NavAccount = null;
-
-  if (loading) {
-  } else if (!data?.me) {
-    NavAccount = (
-      <ButtonBox gap={1}>
-        <Button variant='contained' color='primary'>
-          <Link to={{ pathname: '/login', state: { from: location.pathname } }}>
-            Login
-          </Link>
-        </Button>
-        <Button variant='outlined' color='primary'>
-          <Link
-            to={{
-              pathname: '/register',
-              state: { from: location.pathname },
-            }}>
-            Register
-          </Link>
-        </Button>
-      </ButtonBox>
-    );
-  } else {
-    NavAccount = (
-      <Typography variant='h6' color='textSecondary'>
-        {data.me.username}
-      </Typography>
-    );
-  }
 
   return (
     <AppBar position='static' className={styles.appBar}>
@@ -77,7 +43,7 @@ const Navbar: React.FC = () => {
           </Link>
         </Typography>
         <NavMenu />
-        {NavAccount}
+        <NavAccount />
       </Toolbar>
     </AppBar>
   );

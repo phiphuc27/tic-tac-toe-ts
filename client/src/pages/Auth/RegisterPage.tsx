@@ -3,7 +3,11 @@ import * as Yup from 'yup';
 import { Form, Formik } from 'formik';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Box, CircularProgress, Typography } from '@material-ui/core';
-import { useRegisterMutation } from '../../generated/graphql';
+import {
+  MeDocument,
+  MeQuery,
+  useRegisterMutation,
+} from '../../generated/graphql';
 import { setAccessToken } from '../../global/accessToken';
 import Alert from '../../components/Utils/Alert';
 import FormWrapper from '../../components/Layout/FormWrapper';
@@ -52,7 +56,18 @@ const RegisterPage: React.FC = () => {
             password,
           };
 
-          const { data } = await register({ variables: formData });
+          const { data } = await register({
+            variables: formData,
+            update: (cache, { data: cacheData }) => {
+              cache.writeQuery<MeQuery>({
+                query: MeDocument,
+                data: {
+                  __typename: 'Query',
+                  me: cacheData?.register.user,
+                },
+              });
+            },
+          });
 
           if (data?.register.accessToken) {
             setAccessToken(data?.register.accessToken);

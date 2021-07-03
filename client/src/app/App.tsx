@@ -26,7 +26,7 @@ const App: React.FC = () => {
     fetchToken();
   }, []);
 
-  if (loading) return <></>;
+  if (loading) return null;
 
   return (
     <Router>

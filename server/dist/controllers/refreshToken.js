@@ -23,8 +23,6 @@ const refreshToken = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         const user = yield User_1.User.findOne({ id: payload.userID });
         if (!user)
             return res.send({ success: false, accessToken: '' });
-        if (user.tokenVersion !== payload.tokenVersion)
-            return res.send({ success: false, accessToken: '' });
         const accessToken = generateToken_1.generateAccessToken(user);
         setRefreshToken_1.setRefreshToken(res, generateToken_1.generateRefreshToken(user));
         return res.send({ success: true, accessToken });

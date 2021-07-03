@@ -21,9 +21,6 @@ export const refreshToken = async (req: Request, res: Response) => {
 
     if (!user) return res.send({ success: false, accessToken: '' });
 
-    if (user.tokenVersion !== payload.tokenVersion)
-      return res.send({ success: false, accessToken: '' });
-
     const accessToken = generateAccessToken(user);
 
     setRefreshToken(res, generateRefreshToken(user));

@@ -11,11 +11,9 @@ import { ApolloProvider } from '@apollo/client';
 ReactDOM.render(
   <ApolloProvider client={client}>
     <Provider store={store}>
-      <React.StrictMode>
-        <CssBaseline>
-          <App />
-        </CssBaseline>
-      </React.StrictMode>
+      <CssBaseline>
+        <App />
+      </CssBaseline>
     </Provider>
   </ApolloProvider>,
   document.getElementById('root')

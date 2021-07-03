@@ -19,26 +19,29 @@ import {
   generateRefreshToken,
 } from '../utils/generateToken';
 import { setRefreshToken } from '../utils/setRefreshToken';
-import { getConnection } from 'typeorm';
 
 @Resolver()
 export class UserResolver {
+  /** ----------Get all user---------- */
   @Query(() => [User])
   users(): Promise<User[]> {
     return User.find({});
   }
 
+  /** ----------Get user by ID---------- */
   @Query(() => User, { nullable: true })
   user(@Arg('id') id: string): Promise<User | undefined> {
     return User.findOne(id);
   }
 
+  /** ----------Get logged in user---------- */
   @Query(() => User, { nullable: true })
   @UseMiddleware(isAuth)
-  me(@Ctx() { payload }: MyContext) {
-    return User.findOne(payload?.userID);
+  me(@Ctx() { user }: MyContext) {
+    return user;
   }
 
+  /** ----------Register a user---------- */
   @Mutation(() => UserResponse)
   async register(
     @Arg('input') input: RegisterInput,
@@ -91,6 +94,7 @@ export class UserResolver {
     }
   }
 
+  /** ----------Login a user---------- */
   @Mutation(() => UserResponse)
   async login(
     @Arg('input') input: LoginInput,
@@ -147,15 +151,19 @@ export class UserResolver {
     }
   }
 
+  /** ----------Logout---------- */
   @Mutation(() => Boolean)
-  async revokeRefreshToken(@Arg('userId') userId: string) {
-    await getConnection()
-      .getRepository(User)
-      .increment({ id: userId }, 'tokenVersion', 1);
-
-    return true;
+  @UseMiddleware(isAuth)
+  logout(@Ctx() { res }: MyContext) {
+    try {
+      setRefreshToken(res, '');
+      return true;
+    } catch {
+      return false;
+    }
   }
 
+  /** ----------Delete user by ID---------- */
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
   async deleteUser(@Arg('id') id: string): Promise<boolean> {
