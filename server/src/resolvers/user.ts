@@ -4,9 +4,11 @@ import { User } from '../entities/User';
 import {
   Arg,
   Ctx,
+  FieldResolver,
   Mutation,
   Query,
   Resolver,
+  Root,
   UseMiddleware,
 } from 'type-graphql';
 import { UserResponse } from '../types/UserResponse';
@@ -20,8 +22,16 @@ import {
 } from '../utils/generateToken';
 import { setRefreshToken } from '../utils/setRefreshToken';
 
-@Resolver()
+@Resolver(User)
 export class UserResolver {
+  @FieldResolver(() => String)
+  email(@Root() user: User, @Ctx() { user: contextUser }: MyContext) {
+    if (contextUser?.id === user.id) {
+      return user.email;
+    }
+    return '';
+  }
+
   /** ----------Get all user---------- */
   @Query(() => [User])
   users(): Promise<User[]> {

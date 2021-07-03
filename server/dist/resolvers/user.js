@@ -52,6 +52,12 @@ const isAuth_1 = require("../middleware/isAuth");
 const generateToken_1 = require("../utils/generateToken");
 const setRefreshToken_1 = require("../utils/setRefreshToken");
 let UserResolver = class UserResolver {
+    email(user, { user: contextUser }) {
+        if ((contextUser === null || contextUser === void 0 ? void 0 : contextUser.id) === user.id) {
+            return user.email;
+        }
+        return '';
+    }
     users() {
         return User_1.User.find({});
     }
@@ -173,6 +179,14 @@ let UserResolver = class UserResolver {
     }
 };
 __decorate([
+    type_graphql_1.FieldResolver(() => String),
+    __param(0, type_graphql_1.Root()),
+    __param(1, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [User_1.User, Object]),
+    __metadata("design:returntype", void 0)
+], UserResolver.prototype, "email", null);
+__decorate([
     type_graphql_1.Query(() => [User_1.User]),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
@@ -226,7 +240,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "deleteUser", null);
 UserResolver = __decorate([
-    type_graphql_1.Resolver()
+    type_graphql_1.Resolver(User_1.User)
 ], UserResolver);
 exports.UserResolver = UserResolver;
 //# sourceMappingURL=user.js.map
